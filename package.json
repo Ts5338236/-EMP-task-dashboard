@@ -9,6 +9,7 @@
     "dev:all": "node dev-all.js",
     "dev:frontend": "npm --prefix frontend run dev",
     "dev:backend": "python -m uvicorn backend.app.main:app --host 127.0.0.1 --port 8001 --reload",
+    "build": "npm --prefix frontend run build",
     "build:frontend": "npm --prefix frontend run build",
     "lint:frontend": "npm --prefix frontend run lint",
     "test:frontend": "npm --prefix frontend test",
