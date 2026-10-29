@@ -103,7 +103,7 @@ WorkFlow defines three discrete roles:
 
 ---
 
-## 6. Project Directory Structure
+## 6. Monorepo Directory Structure
 
 ```
 .
@@ -147,31 +147,57 @@ WorkFlow defines three discrete roles:
 │   │   ├── test_reliability.py      # Malformed JSON & recovery tests
 │   │   ├── test_task_prioritization.py # Priority & tie-breaking tests
 │   │   └── test_tasks_unified.py    # Authenticated task aggregator tests
-│   └── requirements.txt             # Python dependencies
-├── src/
-│   ├── components/
-│   │   ├── AdminUserManagement.tsx  # Admin user & role management modal
-│   │   ├── DashboardHeader.tsx      # Header, user badge, refresh, logout
-│   │   ├── LoginPage.tsx            # Responsive login view with quick-fill
-│   │   ├── Sidebar.tsx              # Workspace navigation drawer
-│   │   ├── SummaryCards.tsx         # KPI cards with loading skeletons
-│   │   ├── TaskTable.tsx            # Prioritized responsive task table
-│   │   └── TaskToolbar.tsx          # Filter dropdowns, search, chips
-│   ├── context/
-│   │   └── AuthContext.tsx          # In-memory JWT & HttpOnly session provider
-│   ├── hooks/
-│   │   └── useTasks.ts              # Authenticated task fetching hook
-│   ├── services/
-│   │   ├── authApi.ts               # Auth & admin API client
-│   │   └── taskApi.ts               # Task aggregator client
-│   ├── App.test.tsx                 # Frontend dashboard specification tests
-│   ├── auth.test.tsx                # Frontend auth, validation & role tests
-│   ├── e2e.test.tsx                 # 12-step End-to-End user journey test
-│   └── App.tsx                      # Root application & session gate
-├── dev-all.js                       # One-command dual server launcher
-├── package.json                     # Node.js project manifest & scripts
-├── vite.config.ts                   # Vite proxy configuration
-└── README.md                        # Documentation
+│   ├── .env.example                 # Backend environment variable template
+│   ├── pytest.ini                   # Pytest configuration
+│   └── requirements.txt             # Authoritative backend Python dependencies
+├── frontend/
+│   ├── public/                      # Static assets
+│   ├── src/
+│   │   ├── components/
+│   │   │   ├── AdminUserManagement.tsx  # Admin user & role management modal
+│   │   │   ├── AlertBanner.tsx          # Warning & degradation banners
+│   │   │   ├── Badges.tsx               # Status & priority badges
+│   │   │   ├── DashboardHeader.tsx      # Header, user badge, refresh, logout
+│   │   │   ├── EmptyState.tsx           # No tasks / filtered-out empty state
+│   │   │   ├── ErrorState.tsx           # Full-page outage & retry state
+│   │   │   ├── LoadingState.tsx         # Skeleton loader
+│   │   │   ├── LoginPage.tsx            # Responsive login view with quick-fill
+│   │   │   ├── Sidebar.tsx              # Workspace navigation drawer
+│   │   │   ├── SummaryCards.tsx         # KPI cards with loading skeletons
+│   │   │   ├── TaskRow.tsx              # Individual interactive task row
+│   │   │   ├── TaskTable.tsx            # Prioritized responsive task table
+│   │   │   └── TaskToolbar.tsx          # Filter dropdowns, search, chips
+│   │   ├── context/
+│   │   │   └── AuthContext.tsx          # In-memory JWT & HttpOnly session provider
+│   │   ├── hooks/
+│   │   │   └── useTasks.ts              # Authenticated task fetching hook
+│   │   ├── services/
+│   │   │   ├── authApi.ts               # Auth & admin API client
+│   │   │   └── taskApi.ts               # Task aggregator client
+│   │   ├── types/
+│   │   │   ├── auth.ts                  # TypeScript types for authentication & users
+│   │   │   └── task.ts                  # TypeScript types for task items
+│   │   ├── utils/
+│   │   │   └── taskDisplay.ts           # Formatters, date helpers, urgency icons
+│   │   ├── App.test.tsx                 # Frontend dashboard specification tests
+│   │   ├── auth.test.tsx                # Frontend auth, validation & role tests
+│   │   ├── e2e.test.tsx                 # 12-step End-to-End user journey test
+│   │   ├── App.tsx                      # Root application & session gate
+│   │   ├── index.css                    # Tailwind CSS imports and utility styles
+│   │   └── main.tsx                     # React DOM entry point
+│   ├── .env.example                     # Frontend environment variable template
+│   ├── index.html                       # HTML root template
+│   ├── package.json                     # Authoritative frontend dependencies & scripts
+│   ├── postcss.config.js                # PostCSS configuration
+│   ├── tailwind.config.js               # Tailwind CSS theme configuration
+│   ├── tsconfig.json                    # TypeScript compiler configuration
+│   └── vite.config.ts                   # Vite proxy & test configuration
+├── dev-all.js                           # Dual-server concurrent runner
+├── package.json                         # Root monorepo orchestration scripts
+├── render.yaml                          # Multi-service Render deployment blueprint
+├── vercel.json                          # Vercel deployment manifest
+├── Procfile                             # Process declaration for PaaS deployment
+└── README.md                            # Comprehensive project documentation
 ```
 
 ---
@@ -192,32 +218,101 @@ The system automatically bootstraps demo accounts on startup for immediate testi
 
 ## 8. Installation and Execution
 
-### One-Command Startup (Dual Server Runner)
+### Option A: Monorepo Root Commands (Recommended)
+
+Run both frontend and backend concurrently with one command from the project root:
+
 ```bash
+# Launch both FastAPI backend and Vite frontend concurrently
 npm start
+# or: node dev-all.js
 ```
-This automatically launches:
-- **FastAPI Backend**: `http://127.0.0.1:8001`
-- **React Vite Frontend**: `http://localhost:3000`
+
+This starts:
+- **FastAPI Backend**: `http://127.0.0.1:8001` (API, Auth & Health check)
+- **React Vite Frontend**: `http://localhost:3000` (Dev server with API proxy)
+
+Root convenience scripts:
+```bash
+# Start frontend dev server only
+npm run dev:frontend
+
+# Start backend server only
+npm run dev:backend
+
+# Build frontend production bundle
+npm run build:frontend
+
+# TypeScript typecheck
+npm run lint:frontend
+```
+
+---
+
+### Option B: Independent Service Commands
+
+Both services can be developed, tested, and run completely independently:
+
+#### 1. Backend Service
+```bash
+cd backend
+python -m venv .venv
+# On Windows: .venv\Scripts\activate
+# On Linux/macOS: source .venv/bin/activate
+pip install -r requirements.txt
+python -m uvicorn app.main:app --host 127.0.0.1 --port 8001 --reload
+```
+
+#### 2. Frontend Service
+```bash
+cd frontend
+npm install
+npm run dev
+```
 
 ---
 
 ## 9. Running Automated Tests
 
-### Run Backend Tests (Pytest)
+### Run All Tests (Root Monorepo)
 ```bash
-python -m pytest backend/tests
+# Runs both frontend vitest suite and backend pytest suite
+npm test
+```
+
+### Run Backend Tests Only
+From root:
+```bash
+npm run test:backend
+# or: python -m pytest backend/tests
+```
+Or from inside `backend/`:
+```bash
+cd backend
+python -m pytest tests
 ```
 *Expected: 63 passed.*
 
-### Run Frontend Tests (Vitest)
+### Run Frontend Tests Only
+From root:
 ```bash
+npm run test:frontend
+```
+Or from inside `frontend/`:
+```bash
+cd frontend
 npm test
 ```
 *Expected: 26 passed across 3 test suites.*
 
-### Run TypeScript Typecheck
+### Run Frontend TypeScript Check
+From root:
 ```bash
+npm run lint:frontend
+```
+Or from inside `frontend/`:
+```bash
+cd frontend
 npm run lint
 ```
 *Expected: 0 errors.*

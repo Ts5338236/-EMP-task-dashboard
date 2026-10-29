@@ -1,6 +1,8 @@
 # Node & Frontend
 node_modules/
+frontend/node_modules/
 dist/
+frontend/dist/
 build/
 coverage/
 *.log
@@ -8,6 +10,7 @@ coverage/
 # Environment files
 .env*
 !.env.example
+!frontend/.env.example
 !backend/.env.example
 
 # Python

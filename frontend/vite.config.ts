@@ -1,13 +1,18 @@
 import react from '@vitejs/plugin-react';
 import path from 'path';
+import { fileURLToPath } from 'url';
 import { defineConfig } from 'vite';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 export default defineConfig(() => {
   return {
+    root: __dirname,
     plugins: [react()],
     resolve: {
       alias: {
-        '@': path.resolve(import.meta.dirname, '.'),
+        '@': path.resolve(__dirname, 'src'),
       },
     },
     server: {
@@ -28,10 +33,15 @@ export default defineConfig(() => {
         },
       },
     },
+    build: {
+      outDir: path.resolve(__dirname, 'dist'),
+      emptyOutDir: true,
+    },
     test: {
       globals: true,
       environment: 'jsdom',
-      setupFiles: ['./src/test/setup.ts'],
+      root: __dirname,
+      setupFiles: [path.resolve(__dirname, 'src/test/setup.ts')],
       testTimeout: 15000,
     },
   };
