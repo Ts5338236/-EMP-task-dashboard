@@ -31,7 +31,9 @@ async def fetch_source_tasks(
     try:
         try:
             response = await client.get(url, timeout=timeout)
-        except httpx.ConnectError as conn_err:
+        except (httpx.ConnectError, httpx.TimeoutException, asyncio.TimeoutError) as conn_err:
+            if not (("127.0.0.1" in base_url or "localhost" in base_url) and path.startswith("/api")):
+                raise
             # When running in-memory test suites without a live network listener,
             # execute via ASGI transport to ensure authentic HTTP serialization
             try:

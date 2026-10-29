@@ -180,7 +180,7 @@ describe('End-to-End User Journey Suite (Step 9 Acceptance Verification)', () =>
       // Alex Rivera tasks visible
       expect(screen.getAllByText('Investigate payment gateway webhook failures').length).toBeGreaterThanOrEqual(1);
       // Tushar Gupta task filtered out
-      expect(screen.queryByText('Follow up with customer on contract renewal')).toBeNull();
+      expect(screen.queryAllByText('Follow up with customer on contract renewal')).toHaveLength(0);
     });
 
     // 5. Select a status (In Progress)
@@ -200,7 +200,7 @@ describe('End-to-End User Journey Suite (Step 9 Acceptance Verification)', () =>
     await waitFor(() => {
       expect(screen.getAllByText('Investigate payment gateway webhook failures').length).toBeGreaterThanOrEqual(1);
       // Network switch upgrade filtered out by search term
-      expect(screen.queryByText('Internal IT ticket for network switch upgrade')).not.toBeInTheDocument();
+      expect(screen.queryAllByText('Internal IT ticket for network switch upgrade')).toHaveLength(0);
     });
 
     // 8. Clear filters

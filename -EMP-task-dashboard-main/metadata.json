@@ -1,6 +1,0 @@
-{
-  "name": "Employee Task Dashboard",
-  "description": "Unified employee task prioritization dashboard aggregating tasks from CRM and Helpdesk mock APIs with deadline-based urgency ranking and filtering.",
-  "requestFramePermissions": [],
-  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
-}

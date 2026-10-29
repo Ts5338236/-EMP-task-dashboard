@@ -1,5 +1,31 @@
 import os
+import sys
+from pathlib import Path
 from typing import List
+
+# Ensure project root is in sys.path
+_current = Path(__file__).resolve().parent
+_backend_dir = _current.parent.parent
+_project_root = _backend_dir.parent
+for _p in (str(_project_root), str(_backend_dir)):
+    if _p not in sys.path:
+        sys.path.insert(0, _p)
+
+try:
+    from dotenv import load_dotenv
+    _env_paths = [
+        _backend_dir / ".env",
+        _project_root / "backend" / ".env",
+        _project_root / ".env",
+    ]
+    for _ep in _env_paths:
+        if _ep.exists():
+            load_dotenv(_ep)
+            break
+    else:
+        load_dotenv()
+except ImportError:
+    pass
 
 class Settings:
     PROJECT_NAME: str = "Employee Task Dashboard API"
