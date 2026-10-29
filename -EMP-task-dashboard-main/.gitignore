@@ -1,0 +1,37 @@
+# Node & Frontend
+node_modules/
+dist/
+build/
+coverage/
+*.log
+
+# Environment files
+.env*
+!.env.example
+!backend/.env.example
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+backend/venv/
+venv/
+ENV/
+env/
+.venv/
+
+# Testing caches
+.pytest_cache/
+.coverage
+htmlcov/
+.vitest/
+
+# OS and Editor
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+*.swo
