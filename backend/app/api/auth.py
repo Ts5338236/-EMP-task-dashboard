@@ -124,10 +124,12 @@ async def get_me(
     summary="Logout user and clear session cookies"
 )
 async def logout(response: Response):
+    is_prod = (settings.ENVIRONMENT == "production")
     response.delete_cookie(
         key="access_token",
         path="/",
-        samesite="lax"
+        samesite="lax",
+        secure=is_prod
     )
     return {"detail": "Logged out successfully"}
 
@@ -140,3 +142,4 @@ async def register():
         status_code=status.HTTP_403_FORBIDDEN,
         detail="Public self-registration is disabled. Accounts must be provisioned by an administrator."
     )
+

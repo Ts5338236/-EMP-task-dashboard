@@ -141,3 +141,4 @@ describe('Authentication & Authorization Frontend Suite', () => {
     expect(screen.getByLabelText('Open User Management')).toBeInTheDocument();
   });
 });
+

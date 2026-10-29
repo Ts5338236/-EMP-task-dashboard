@@ -33,6 +33,10 @@ async def get_current_user(
             headers={"WWW-Authenticate": "Bearer"},
         )
 
+    # Clean bearer prefix if present
+    if token.startswith("Bearer "):
+        token = token[7:].strip()
+
     # Decode and validate signature, expiry, and claims
     try:
         payload = decode_access_token(token)
@@ -98,3 +102,4 @@ def require_roles(*allowed_roles: str) -> Callable:
 
 require_admin = require_roles("ADMIN")
 require_manager_or_admin = require_roles("ADMIN", "MANAGER")
+

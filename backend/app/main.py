@@ -11,18 +11,22 @@ for _p in (str(_project_root), str(_backend_dir)):
     if _p not in sys.path:
         sys.path.insert(0, _p)
 
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
+from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
+import logging
 from backend.app.core.config import settings
 from backend.app.db.database import init_db
 from backend.app.scripts.bootstrap_admin import bootstrap_initial_users
+
+logger = logging.getLogger("workflow.backend")
 
 # Ensure database tables and initial users are ready immediately
 try:
     init_db()
     bootstrap_initial_users()
 except Exception as _e:
-    pass
+    logger.error(f"Failed to bootstrap initial database users: {_e}")
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -60,6 +64,15 @@ app.include_router(tasks_router)
 app.include_router(crm_router)
 app.include_router(helpdesk_router)
 app.include_router(mock_detail_router)
+
+# Global exception boundary preventing stack trace leakage
+@app.exception_handler(Exception)
+async def global_exception_handler(request: Request, exc: Exception):
+    logger.error(f"Internal unhandled exception on {request.method} {request.url.path}: {exc}")
+    return JSONResponse(
+        status_code=500,
+        content={"detail": "Internal server error. Please try again later."}
+    )
 
 @app.get("/health", tags=["Health"])
 async def health_check():

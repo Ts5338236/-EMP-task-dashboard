@@ -32,3 +32,4 @@ export interface UpdateUserInput {
   is_active?: boolean;
   password?: string;
 }
+

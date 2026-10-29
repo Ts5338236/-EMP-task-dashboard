@@ -42,10 +42,12 @@ def test_employee_cannot_access_admin_user_management():
     assert "Access denied" in res.json()["detail"]
 
 def test_admin_can_create_provisioned_user():
+    import uuid
+    uid = uuid.uuid4().hex[:8]
     admin_token = _get_token_for("admin")
     payload = {
-        "username": "new_engineer",
-        "email": "engineer@workflow.local",
+        "username": f"engineer_{uid}",
+        "email": f"engineer_{uid}@workflow.local",
         "password": "SecurePassword123!",
         "role": "EMPLOYEE",
         "employee_name": "Alex Rivera"
@@ -53,7 +55,7 @@ def test_admin_can_create_provisioned_user():
     res = client.post("/api/admin/users", json=payload, headers={"Authorization": f"Bearer {admin_token}"})
     assert res.status_code == 201
     created = res.json()
-    assert created["username"] == "new_engineer"
+    assert created["username"] == f"engineer_{uid}"
     assert created["role"] == "EMPLOYEE"
     assert "password_hash" not in created
 
@@ -85,3 +87,4 @@ def test_manager_views_all_tasks():
     assert len(tasks) == 24
     employees = {t["employee"] for t in tasks}
     assert len(employees) > 1
+

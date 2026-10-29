@@ -114,3 +114,4 @@ def deactivate_user(user_id: str, db_path: str = None) -> Tuple[bool, str]:
 
     update_user(user_id, is_active=False, db_path=db_path)
     return True, "User deactivated successfully"
+

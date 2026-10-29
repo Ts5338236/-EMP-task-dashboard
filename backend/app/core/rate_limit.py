@@ -18,6 +18,13 @@ class LoginRateLimiter:
         cutoff = now - self.window_seconds
         # Clean older entries
         self._failures[key] = [t for t in self._failures[key] if t > cutoff]
+        
+        # Periodic memory cleanup if dictionary grows large
+        if len(self._failures) > 1000:
+            stale_keys = [k for k, v in self._failures.items() if not v]
+            for sk in stale_keys:
+                del self._failures[sk]
+
         return len(self._failures[key]) >= self.max_attempts
 
     def record_failure(self, key: str) -> None:
@@ -34,3 +41,4 @@ login_rate_limiter = LoginRateLimiter(
     max_attempts=settings.RATE_LIMIT_LOGIN_MAX,
     window_seconds=settings.RATE_LIMIT_LOGIN_WINDOW_SECONDS
 )
+

@@ -78,3 +78,4 @@ def bootstrap_initial_users(db_path: str = None) -> None:
 
 if __name__ == "__main__":
     bootstrap_initial_users()
+

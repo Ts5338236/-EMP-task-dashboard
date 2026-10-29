@@ -41,11 +41,13 @@ def test_login_missing_credentials():
     assert response.status_code == 422
 
 def test_login_inactive_account():
-    # Create deactivated user
+    # Create deactivated user with unique identifier for test idempotency
+    import uuid
+    uid = uuid.uuid4().hex[:8]
     h = hash_password("InactivePass123!")
-    user = create_user("inactive_tester", "inactive@workflow.local", h, "EMPLOYEE", is_active=False)
+    user = create_user(f"inactive_{uid}", f"inactive_{uid}@workflow.local", h, "EMPLOYEE", is_active=False)
 
-    response = client.post("/api/auth/login", json={"identifier": "inactive_tester", "password": "InactivePass123!"})
+    response = client.post("/api/auth/login", json={"identifier": f"inactive_{uid}", "password": "InactivePass123!"})
     assert response.status_code == 403
     assert "deactivated" in response.json()["detail"].lower()
 
@@ -95,3 +97,4 @@ def test_login_rate_limiting():
     res = client.post("/api/auth/login", json={"identifier": "ratelimit_target", "password": "bad"})
     assert res.status_code == 429
     assert "Too many failed login attempts" in res.json()["detail"]
+
