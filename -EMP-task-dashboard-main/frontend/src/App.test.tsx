@@ -95,6 +95,9 @@ describe('Employee Task Dashboard - Step 6 Full Specification Suite', () => {
     expect(screen.getByText('WorkFlow')).toBeInTheDocument();
     expect(screen.getByText('Enterprise Desk')).toBeInTheDocument();
     expect(screen.getByText('Employee Dashboard')).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getAllByText('Follow up with customer on contract renewal').length).toBeGreaterThanOrEqual(1);
+    });
   });
 
   it('2. renders accurate summary card calculations', async () => {

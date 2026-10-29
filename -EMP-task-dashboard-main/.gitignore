@@ -8,6 +8,7 @@ coverage/
 # Environment files
 .env*
 !.env.example
+!frontend/.env.example
 !backend/.env.example
 
 # Python
