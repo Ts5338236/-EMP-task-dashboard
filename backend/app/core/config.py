@@ -1,7 +1,8 @@
 import os
 import sys
+import secrets
 from pathlib import Path
-from typing import List
+from typing import List, Optional
 
 # Ensure project root is in sys.path
 _current = Path(__file__).resolve().parent
@@ -51,5 +52,29 @@ class Settings:
     # Timeouts and business timezone
     REQUEST_TIMEOUT_SECONDS: float = float(os.getenv("REQUEST_TIMEOUT_SECONDS", "3.5"))
     BUSINESS_TIMEZONE: str = os.getenv("BUSINESS_TIMEZONE", "UTC")
+
+    # Authentication & Session Security
+    # In production, JWT_SECRET_KEY must be provided via environment variable
+    JWT_SECRET_KEY: str = os.getenv(
+        "JWT_SECRET_KEY",
+        "workflow-dev-secret-key-at-least-32-bytes-long-for-hs256-security"
+    )
+    JWT_ALGORITHM: str = "HS256"
+    ACCESS_TOKEN_EXPIRE_MINUTES: int = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", "15"))
+
+    # Database Persistence
+    DATABASE_PATH: str = os.getenv(
+        "DATABASE_PATH",
+        str(_backend_dir / "data" / "users.db")
+    )
+
+    # Initial Admin Provisioning
+    INITIAL_ADMIN_EMAIL: str = os.getenv("INITIAL_ADMIN_EMAIL", "admin@workflow.local")
+    INITIAL_ADMIN_USERNAME: str = os.getenv("INITIAL_ADMIN_USERNAME", "admin")
+    INITIAL_ADMIN_PASSWORD: Optional[str] = os.getenv("INITIAL_ADMIN_PASSWORD", None)
+
+    # Rate Limiting for Login Attempts
+    RATE_LIMIT_LOGIN_MAX: int = int(os.getenv("RATE_LIMIT_LOGIN_MAX", "5"))
+    RATE_LIMIT_LOGIN_WINDOW_SECONDS: int = int(os.getenv("RATE_LIMIT_LOGIN_WINDOW_SECONDS", "300"))
 
 settings = Settings()

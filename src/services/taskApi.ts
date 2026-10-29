@@ -15,7 +15,8 @@ const API_BASE = getApiBaseUrl();
 
 export async function fetchTasks(
   params: TaskFilterParams = {},
-  signal?: AbortSignal
+  signal?: AbortSignal,
+  token?: string | null
 ): Promise<UnifiedTasksResponse> {
   const query = new URLSearchParams();
 
@@ -34,11 +35,17 @@ export async function fetchTasks(
   const queryString = query.toString();
   const endpoint = `${API_BASE}/api/tasks${queryString ? `?${queryString}` : ''}`;
 
+  const headers: Record<string, string> = {
+    'Accept': 'application/json',
+  };
+  if (token) {
+    headers['Authorization'] = `Bearer ${token}`;
+  }
+
   const response = await fetch(endpoint, {
     method: 'GET',
-    headers: {
-      'Accept': 'application/json',
-    },
+    headers,
+    credentials: 'include',
     signal,
   });
 

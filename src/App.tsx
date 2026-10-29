@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { AlertTriangle, X } from 'lucide-react';
+import { AlertTriangle, X, Loader2 } from 'lucide-react';
 import { Sidebar } from './components/Sidebar';
 import { DashboardHeader } from './components/DashboardHeader';
 import { SummaryCards } from './components/SummaryCards';
@@ -9,13 +9,17 @@ import { AlertBanner } from './components/AlertBanner';
 import { LoadingState } from './components/LoadingState';
 import { EmptyState } from './components/EmptyState';
 import { ErrorState } from './components/ErrorState';
+import { LoginPage } from './components/LoginPage';
+import { AdminUserManagement } from './components/AdminUserManagement';
+import { AuthProvider, useAuth } from './context/AuthContext';
 import { useTasks } from './hooks/useTasks';
 import { calculateSummaryCounts } from './utils/taskDisplay';
 
-export default function App() {
+function DashboardView() {
   const [activeTab, setActiveTab] = useState<string>('dashboard');
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState<boolean>(false);
   const [dismissedWarnings, setDismissedWarnings] = useState<boolean>(false);
+  const [adminModalOpen, setAdminModalOpen] = useState<boolean>(false);
 
   const {
     tasks,
@@ -58,6 +62,7 @@ export default function App() {
         mobileOpen={mobileSidebarOpen}
         setMobileOpen={setMobileSidebarOpen}
         totalTaskCount={tasks.length}
+        onOpenAdmin={() => setAdminModalOpen(true)}
       />
 
       {/* Main Workspace */}
@@ -68,6 +73,7 @@ export default function App() {
           refreshing={refreshing}
           lastUpdated={lastUpdated}
           onOpenMobileMenu={() => setMobileSidebarOpen(true)}
+          onOpenAdmin={() => setAdminModalOpen(true)}
         />
 
         {/* Content Body */}
@@ -160,6 +166,40 @@ export default function App() {
           WorkFlow Enterprise Task Management &middot; Real-time Prioritization from CRM &amp; Helpdesk APIs
         </footer>
       </div>
+
+      {/* Admin User Management Modal */}
+      {adminModalOpen && (
+        <AdminUserManagement onClose={() => setAdminModalOpen(false)} />
+      )}
     </div>
+  );
+}
+
+function AppContent() {
+  const { user, loading } = useAuth();
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-slate-900 flex flex-col items-center justify-center text-slate-300 gap-3">
+        <Loader2 className="h-8 w-8 animate-spin text-indigo-500" />
+        <span className="text-xs uppercase tracking-widest font-semibold text-slate-400">
+          Verifying security session...
+        </span>
+      </div>
+    );
+  }
+
+  if (!user) {
+    return <LoginPage />;
+  }
+
+  return <DashboardView />;
+}
+
+export default function App() {
+  return (
+    <AuthProvider>
+      <AppContent />
+    </AuthProvider>
   );
 }

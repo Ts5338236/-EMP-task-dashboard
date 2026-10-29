@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { Task, TaskFilterParams, UnifiedTasksResponse } from '../types/task';
 import { fetchTasks } from '../services/taskApi';
+import { useAuth } from '../context/AuthContext';
 
 function getInitialFiltersFromURL() {
   if (typeof window === 'undefined') {
@@ -16,6 +17,15 @@ function getInitialFiltersFromURL() {
 
 export function useTasks() {
   const initial = getInitialFiltersFromURL();
+
+  // Retrieve in-memory auth token safely
+  let token: string | null = null;
+  try {
+    const auth = useAuth();
+    token = auth.token;
+  } catch {
+    // Graceful fallback for isolated tests outside AuthProvider
+  }
 
   const [tasks, setTasks] = useState<Task[]>([]);
   const [sources, setSources] = useState<UnifiedTasksResponse['sources']>({});
@@ -93,7 +103,7 @@ export function useTasks() {
     };
 
     try {
-      const response = await fetchTasks(params, controller.signal);
+      const response = await fetchTasks(params, controller.signal, token);
       setTasks(response.tasks || []);
       setSources(response.sources || {});
       setWarnings(response.warnings || []);
@@ -113,7 +123,7 @@ export function useTasks() {
       setLoading(false);
       setRefreshing(false);
     }
-  }, [employeeFilter, statusFilter, debouncedSearch]);
+  }, [employeeFilter, statusFilter, debouncedSearch, token]);
 
   // Trigger load when filters change
   useEffect(() => {

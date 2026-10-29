@@ -5,8 +5,10 @@ import {
   Users, 
   Workflow, 
   X,
-  Server
+  Server,
+  Shield
 } from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
 
 interface SidebarProps {
   activeTab: string;
@@ -14,6 +16,7 @@ interface SidebarProps {
   mobileOpen: boolean;
   setMobileOpen: (open: boolean) => void;
   totalTaskCount: number;
+  onOpenAdmin?: () => void;
 }
 
 export function Sidebar({
@@ -22,12 +25,19 @@ export function Sidebar({
   mobileOpen,
   setMobileOpen,
   totalTaskCount,
+  onOpenAdmin,
 }: SidebarProps) {
+  const { user } = useAuth();
+
   const navItems = [
     { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
     { id: 'all-tasks', label: 'All Tasks', icon: CheckSquare, count: totalTaskCount },
     { id: 'employees', label: 'Employees', icon: Users },
   ];
+
+  if (user?.role === 'ADMIN') {
+    navItems.push({ id: 'admin-users', label: 'User Directory', icon: Shield });
+  }
 
   const renderNavList = () => (
     <nav className="flex-1 px-3 py-6 space-y-1">
@@ -41,7 +51,11 @@ export function Sidebar({
           <button
             key={item.id}
             onClick={() => {
-              setActiveTab(item.id);
+              if (item.id === 'admin-users' && onOpenAdmin) {
+                onOpenAdmin();
+              } else {
+                setActiveTab(item.id);
+              }
               setMobileOpen(false);
             }}
             className={`w-full flex items-center justify-between px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${

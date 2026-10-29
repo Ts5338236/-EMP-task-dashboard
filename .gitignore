@@ -28,6 +28,13 @@ env/
 htmlcov/
 .vitest/
 
+# Database files
+*.db
+*.sqlite
+*.sqlite3
+backend/data/
+data/
+
 # OS and Editor
 .DS_Store
 Thumbs.db
