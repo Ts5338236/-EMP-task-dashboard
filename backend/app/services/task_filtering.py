@@ -36,7 +36,7 @@ def filter_tasks(
         if cleaned_employee:
             result = [t for t in result if cleaned_employee in t.employee.lower()]
 
-    # 3. Search Filter Application (across title, id, description, employee)
+    # 3. Search Filter Application (across title, id, description, employee, source, urgency, priority)
     if search:
         query = search.strip().lower()
         if query:
@@ -47,6 +47,9 @@ def filter_tasks(
                 or query in t.description.lower()
                 or query in t.employee.lower()
                 or query in t.source.value.lower()
+                or query in t.urgency.value.lower()
+                or (t.priority_category and query in t.priority_category.lower())
+                or (query == "overdue" and getattr(t, "is_overdue", False))
             ]
 
     return result

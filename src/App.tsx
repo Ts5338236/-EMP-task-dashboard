@@ -76,8 +76,18 @@ export default function App() {
           <SummaryCards
             counts={summaryCounts}
             selectedStatus={statusFilter}
-            onSelectStatus={(status) => setStatusFilter(status)}
+            onSelectStatus={(status) => {
+              if (status === 'Overdue') {
+                setSearchQuery(searchQuery.toLowerCase() === 'overdue' ? '' : 'Overdue');
+              } else {
+                setStatusFilter(statusFilter === status ? 'All Statuses' : status);
+                if (searchQuery.toLowerCase() === 'overdue') {
+                  setSearchQuery('');
+                }
+              }
+            }}
             loading={loading}
+            isOverdueSelected={searchQuery.toLowerCase() === 'overdue'}
           />
 
           {/* Background Refresh Failure Notice */}

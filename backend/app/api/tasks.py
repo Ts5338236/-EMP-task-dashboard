@@ -48,24 +48,24 @@ async def get_unified_tasks(
     # 3. Deduplicate by (source, id)
     deduped = merge_and_deduplicate_tasks([raw_merged])
 
-    # 4. Apply filtering (validates status and raises 422 if unsupported)
-    filtered = filter_tasks(
+    # 4. Apply Prioritization Engine to compute priority tiers, rank, and overdue flags
+    prioritized = prioritize_tasks(
         tasks=deduped,
+        evaluation_time=None,  # Evaluates against current UTC time
+        business_timezone_str=settings.BUSINESS_TIMEZONE
+    )
+
+    # 5. Apply filtering (validates status and raises 422 if unsupported)
+    filtered = filter_tasks(
+        tasks=prioritized,
         employee=employee,
         status_filter=status,
         search=search
     )
 
-    # 5. Apply Prioritization Engine
-    prioritized = prioritize_tasks(
-        tasks=filtered,
-        evaluation_time=None,  # Evaluates against current UTC time
-        business_timezone_str=settings.BUSINESS_TIMEZONE
-    )
-
     return UnifiedTasksResponse(
-        tasks=prioritized,
+        tasks=filtered,
         sources=sources_status,
         warnings=warnings,
-        total=len(prioritized)
+        total=len(filtered)
     )

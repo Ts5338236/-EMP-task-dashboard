@@ -5,6 +5,8 @@ class Settings:
     PROJECT_NAME: str = "Employee Task Dashboard API"
     VERSION: str = "1.0.0"
     ENVIRONMENT: str = os.getenv("ENVIRONMENT", "development")
+    HOST: str = os.getenv("HOST", "0.0.0.0")
+    PORT: int = int(os.getenv("PORT", "8001"))
     
     # Read comma-separated origins, with safe development defaults
     ALLOWED_ORIGINS: List[str] = [

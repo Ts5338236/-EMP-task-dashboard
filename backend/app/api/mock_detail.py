@@ -172,6 +172,7 @@ def render_html_viewer(task: TaskSchema, system_name: str, brand_color: str) -> 
 
 @router.get("/mock/crm/{task_id}", summary="Mock CRM Task Detail Viewer")
 @router.get("/api/mock/crm/{task_id}", include_in_schema=False)
+@router.get("/api/mock/crm/tasks/{task_id}", include_in_schema=False)
 async def mock_crm_detail(task_id: str, request: Request):
     """
     Simulated CRM task record viewer. Returns HTML for browser navigation,
@@ -194,6 +195,7 @@ async def mock_crm_detail(task_id: str, request: Request):
 
 @router.get("/mock/helpdesk/{task_id}", summary="Mock Helpdesk Ticket Detail Viewer")
 @router.get("/api/mock/helpdesk/{task_id}", include_in_schema=False)
+@router.get("/api/mock/helpdesk/tasks/{task_id}", include_in_schema=False)
 async def mock_helpdesk_detail(task_id: str, request: Request):
     """
     Simulated Helpdesk ticket record viewer. Returns HTML for browser navigation,

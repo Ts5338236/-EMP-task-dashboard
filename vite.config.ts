@@ -26,6 +26,10 @@ export default defineConfig(() => {
           target: 'http://127.0.0.1:8001',
           changeOrigin: true,
         },
+        '/mock': {
+          target: 'http://127.0.0.1:8001',
+          changeOrigin: true,
+        },
       },
     },
     test: {

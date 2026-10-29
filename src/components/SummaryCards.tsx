@@ -13,9 +13,10 @@ interface SummaryCardsProps {
   selectedStatus: string;
   onSelectStatus?: (status: string) => void;
   loading?: boolean;
+  isOverdueSelected?: boolean;
 }
 
-export function SummaryCards({ counts, selectedStatus, onSelectStatus, loading }: SummaryCardsProps) {
+export function SummaryCards({ counts, selectedStatus, onSelectStatus, loading, isOverdueSelected }: SummaryCardsProps) {
   const cards = [
     {
       id: 'All Statuses',
@@ -64,13 +65,13 @@ export function SummaryCards({ counts, selectedStatus, onSelectStatus, loading }
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
       {cards.map((card) => {
         const Icon = card.icon;
-        const isSelected = selectedStatus === card.id;
+        const isSelected = card.id === 'Overdue' ? Boolean(isOverdueSelected) : selectedStatus === card.id;
 
         return (
           <div
             key={card.id}
             onClick={() => {
-              if (onSelectStatus && card.id !== 'Overdue') {
+              if (onSelectStatus) {
                 onSelectStatus(card.id);
               }
             }}
@@ -78,7 +79,7 @@ export function SummaryCards({ counts, selectedStatus, onSelectStatus, loading }
               isSelected
                 ? 'border-indigo-600 ring-2 ring-indigo-500/20 shadow-sm'
                 : 'border-slate-200 hover:border-slate-300 shadow-2xs'
-            } ${onSelectStatus && card.id !== 'Overdue' ? 'cursor-pointer' : ''}`}
+            } ${onSelectStatus ? 'cursor-pointer' : ''}`}
           >
             <div className="flex items-center justify-between">
               <span className="text-xs font-semibold uppercase tracking-wider text-slate-500">

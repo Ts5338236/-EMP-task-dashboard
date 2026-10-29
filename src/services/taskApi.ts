@@ -1,6 +1,17 @@
 import { UnifiedTasksResponse, TaskFilterParams } from '../types/task';
 
-const API_BASE = import.meta.env.VITE_API_BASE_URL || '';
+function getApiBaseUrl(): string {
+  const configured = import.meta.env.VITE_API_BASE_URL || '';
+  if (typeof window !== 'undefined') {
+    const isRemote = window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1';
+    if (isRemote && (configured.includes('localhost') || configured.includes('127.0.0.1'))) {
+      return '';
+    }
+  }
+  return configured;
+}
+
+const API_BASE = getApiBaseUrl();
 
 export async function fetchTasks(
   params: TaskFilterParams = {},
